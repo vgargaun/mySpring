@@ -18,15 +18,20 @@ public class CarsControler {
     String addNewCars (@RequestParam String model, @RequestParam String color) {
 
         Cars car = new Cars();
-
-
-
         car.setModel(model);
         car.setColor(color);
         carsRepository.save(car);
         return "Saved";
     }
 
+    @GetMapping(path = "/deleteById")
+    public @ResponseBody String deleteById(@RequestParam long id)
+    {
+        Cars car = new Cars();
+        car.setId(id);
+        carsRepository.delete(car);
+        return "Deleted ";
+    }
 
 
     @GetMapping(path="/list")
