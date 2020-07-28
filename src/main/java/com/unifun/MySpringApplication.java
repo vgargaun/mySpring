@@ -1,4 +1,4 @@
-package com.unifun.mySpring;
+package com.unifun;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

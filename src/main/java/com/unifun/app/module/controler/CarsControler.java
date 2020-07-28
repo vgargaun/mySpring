@@ -1,9 +1,9 @@
-package com.unifun.mySpring.repository.models;
+package com.unifun.app.module.controler;
 
 
-import com.unifun.mySpring.models.Cars;
+import com.unifun.app.models.Cars;
+import com.unifun.app.module.Repository.CarsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 

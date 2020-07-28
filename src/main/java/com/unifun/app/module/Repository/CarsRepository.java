@@ -1,6 +1,6 @@
-package com.unifun.mySpring.repository.models;
+package com.unifun.app.module.Repository;
 
-import com.unifun.mySpring.models.Cars;
+import com.unifun.app.models.Cars;
 import org.springframework.data.repository.CrudRepository;
 
 

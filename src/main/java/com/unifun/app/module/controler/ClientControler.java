@@ -1,7 +1,8 @@
-package com.unifun.mySpring.repository.models;
+package com.unifun.app.module.controler;
 
 
-import com.unifun.mySpring.models.Clients;
+import com.unifun.app.models.Clients;
+import com.unifun.app.module.Repository.ClientsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

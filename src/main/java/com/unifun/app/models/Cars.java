@@ -1,4 +1,4 @@
-package com.unifun.mySpring.models;
+package com.unifun.app.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
