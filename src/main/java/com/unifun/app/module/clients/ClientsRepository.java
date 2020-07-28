@@ -1,4 +1,4 @@
-package com.unifun.app.module.Repository;
+package com.unifun.app.module.clients;
 
 import com.unifun.app.models.Clients;
 import org.springframework.data.repository.CrudRepository;
