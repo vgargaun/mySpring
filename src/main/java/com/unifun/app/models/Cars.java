@@ -19,7 +19,6 @@ public class Cars {
     private long id;
     private String model;
     private String color;
-    private long id_client;
 
 //    private int price;
 

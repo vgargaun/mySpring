@@ -1,4 +1,4 @@
-package com.unifun.app.components;
+package com.unifun.app.components.jsoncomponents;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
