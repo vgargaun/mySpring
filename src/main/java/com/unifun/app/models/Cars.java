@@ -23,6 +23,6 @@ public class Cars {
 //    private int price;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    public Clients clients;
+    public Clients id_client;
 
 }
