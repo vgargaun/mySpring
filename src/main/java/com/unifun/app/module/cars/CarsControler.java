@@ -1,87 +1,82 @@
-package com.unifun.app.module.clients;
-
+package com.unifun.app.module.cars;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unifun.app.components.jsoncomponents.JsonComponent;
 import com.unifun.app.components.validation.ValidationMaiSerioasa;
-import com.unifun.app.models.Clients;
+import com.unifun.app.models.Cars;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 @Controller
-@RequestMapping(path = "/clients")
-public class ClientControler {
-    public static Logger logger = Logger.getLogger(ClientControler.class);
+@RequestMapping(path = "/cars")
+public class CarsControler {
+    public static Logger logger = Logger.getLogger(CarsControler.class);
     ArrayList<Long> id = new ArrayList<>();
     @Autowired
-    private ClientsRepository clientRepository;
+    private CarsRepository carsRepository;
 
     @GetMapping(path = "/add")
     public @ResponseBody
-    String addNewClients(@RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
-                         HttpServletResponse resp) throws JsonProcessingException {
+    Object addNewCars(@RequestParam(defaultValue = "") String model, @RequestParam(defaultValue = "") String color,
+                      HttpServletResponse resp) throws IOException, ServletException {
+
         JsonComponent j = new JsonComponent();
 
         HashMap<String, LinkedList> map = new HashMap<>();
-        LinkedList<String> firstN = new LinkedList<>();
-        LinkedList<String> lastN = new LinkedList<>();
-        firstN.add(firstName);
-        firstN.add("min3");
-        firstN.add("max9");
-        firstN.add("[A-Z][a-z]+");
-        map.put("firstName", firstN);
-        lastN.add(lastName);
-        lastN.add("min3");
-        lastN.add("max9");
-        lastN.add("[A-Z][a-z]+");
-        map.put("lastName", lastN);
+        LinkedList<String> carName = new LinkedList<String>();
+        LinkedList<String> colorName = new LinkedList<>();
+        carName.add(model);
+        carName.add("max6");
+        carName.add("min2");
+        carName.add("[A-Z]+");
+        map.put("model",carName);
+        colorName.add(color);
+        map.put("color", colorName);
+
         try {
 
+//            Validation validation = new Validation(color, model, 2, 6, "[A-Z]+");
             ValidationMaiSerioasa validation = new ValidationMaiSerioasa();
-            HashMap<String, String> keyName = validation.validation(map);
-            boolean val = true;
-            for (Map.Entry<String, String> map1 : keyName.entrySet()) {
-                logger.info(map1.getKey() + "  " + map1.getValue());
-                if(map1.getValue()==null) {val = false; break;}
-            }
-            if (val) {
-                Clients client = new Clients();
-                client.setFirstName(firstName);
-                client.setLastName(lastName);
-                clientRepository.save(client);
-                this.id.add(client.getId());
+            if (validation.getValid()) {
+                Cars car = new Cars();
+                car.setModel(model);
+                car.setColor(color);
+                carsRepository.save(car);
+                this.id.add(car.getId());
                 resp.setStatus(200);
-                logger.info("Saved new client");
+                logger.info("Saved new car ");
                 return j.NoErrorMessage();
 
             } else {
                 logger.warn("Bad request param");
                 resp.setStatus(400);
-                return j.ErrorMessage(1, "Is bad request", HttpStatus.BAD_REQUEST);
+                resp.getWriter().write(j.ErrorMessage(1, "Is bad request", HttpStatus.BAD_REQUEST));
+                logger.info("1");
             }
-        }
-         catch (Exception e) {
+
+        } catch (Exception e) {
             resp.setStatus(400);
             logger.warn("Don't saved " + e);
             return j.ErrorMessage(1, "Is bad request", HttpStatus.BAD_REQUEST);
-
         }
-
+        return null;
     }
+
 
     @GetMapping(path = "/deleteById")
     public @ResponseBody
-    String deleteById(@RequestParam(defaultValue = "") String id,
-                      HttpServletResponse resp) throws JsonProcessingException {
+    String deleteById(@RequestParam(defaultValue = "") String id, HttpServletResponse resp) throws JsonProcessingException {
         JsonComponent j = new JsonComponent();
         try {
 
@@ -93,11 +88,11 @@ public class ClientControler {
                         break;
                     }
                 }
-                Clients client = new Clients();
-                client.setId(Long.parseLong(id));
-                clientRepository.delete(client);
+                Cars car = new Cars();
+                car.setId(Long.parseLong(id));
+                carsRepository.delete(car);
                 resp.setStatus(200);
-                logger.info("Client, was deleted");
+                logger.info("Car, was deleted");
                 return j.NoErrorMessage();
             } else {
                 resp.setStatus(400);
@@ -110,13 +105,12 @@ public class ClientControler {
             logger.warn("Was not deleted " + e);
             return j.ErrorMessage(2, "Was not deleted", HttpStatus.BAD_REQUEST);
         }
-
     }
+
 
     @GetMapping(path = "/list")
     public @ResponseBody
     Object getAllUsers(HttpServletResponse resp) throws JsonProcessingException {
-
         JsonComponent j = new JsonComponent();
         try {
             if (this.id.isEmpty()) {
@@ -126,13 +120,11 @@ public class ClientControler {
             }
             resp.setStatus(200);
             logger.info("Showed list ");
-            return clientRepository.findAll();
+            return carsRepository.findAll();
         } catch (Exception e) {
             resp.setStatus(200);
             logger.warn("Error for show all " + e);
             return j.ErrorMessage(4, "Data Base is Emty", HttpStatus.BAD_REQUEST);
-
         }
     }
-
 }
