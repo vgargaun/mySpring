@@ -2,7 +2,7 @@ package com.unifun.app.module.cars;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unifun.app.components.jsoncomponents.JsonComponent;
-import com.unifun.app.components.validation.ValidationMaiSerioasa;
+import com.unifun.app.components.validation.Validation;
 import com.unifun.app.models.Cars;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 @Controller
 @RequestMapping(path = "/cars")
@@ -37,21 +38,36 @@ public class CarsControler {
         LinkedList<String> carName = new LinkedList<String>();
         LinkedList<String> colorName = new LinkedList<>();
         carName.add(model);
+        carName.add("required");
         carName.add("max6");
         carName.add("min2");
         carName.add("[A-Z]+");
         map.put("model",carName);
+
         colorName.add(color);
+        colorName.add("required");
+        colorName.add("color");
         map.put("color", colorName);
 
         try {
 
 //            Validation validation = new Validation(color, model, 2, 6, "[A-Z]+");
-            ValidationMaiSerioasa validation = new ValidationMaiSerioasa();
-            if (validation.getValid()) {
+            Validation validation = new Validation();
+
+            HashMap<String, String> keyName = validation.validation(map);
+            boolean val = true;
+            for (Map.Entry<String, String> map1 : keyName.entrySet()) {
+                logger.info(map1.getKey() + "  " + map1.getValue());
+                if (map1.getValue() == null) {
+                    val = false;
+                    break;
+                } else if (map1.getValue().equals("no required")) map1.setValue(null);
+            }
+
+            if (val) {
                 Cars car = new Cars();
-                car.setModel(model);
-                car.setColor(color);
+                car.setModel(keyName.get("model"));
+                car.setColor(keyName.get("color"));
                 carsRepository.save(car);
                 this.id.add(car.getId());
                 resp.setStatus(200);
@@ -62,7 +78,6 @@ public class CarsControler {
                 logger.warn("Bad request param");
                 resp.setStatus(400);
                 resp.getWriter().write(j.ErrorMessage(1, "Is bad request", HttpStatus.BAD_REQUEST));
-                logger.info("1");
             }
 
         } catch (Exception e) {
@@ -80,7 +95,7 @@ public class CarsControler {
         JsonComponent j = new JsonComponent();
         try {
 
-            ValidationMaiSerioasa validation = new ValidationMaiSerioasa(this.id, Long.parseLong(id));
+            Validation validation = new Validation(this.id, Long.parseLong(id));
             if (validation.getValid()) {
                 for (int i = 0; i < this.id.size(); i++) {
                     if (Long.parseLong(id) == this.id.get(i)) {
@@ -102,6 +117,7 @@ public class CarsControler {
 
         } catch (Exception e) {
             resp.setStatus(400);
+            logger.info("control");
             logger.warn("Was not deleted " + e);
             return j.ErrorMessage(2, "Was not deleted", HttpStatus.BAD_REQUEST);
         }
