@@ -136,7 +136,7 @@ public class ClientControler {
         firstN.add("min2");
         firstN.add("max7");
         firstN.add("[A-Z][a-z]+");
-        map.put("firstName", firstN);
+        map.put("first_name", firstN);
 
 
         lastN.add(lastName);
@@ -145,7 +145,7 @@ public class ClientControler {
         lastN.add("min2");
         lastN.add("max9");
         lastN.add("[A-Z][a-z]+");
-        map.put("lastName", lastN);
+        map.put("last_name", lastN);
 
         try {
             Validation validation = new Validation();
@@ -169,6 +169,7 @@ public class ClientControler {
             };
 
             List<Clients> listClients = null;
+            keyName.put("id ", id);
 //            if (client.getFirstName().isEmpty() && client.getLastName().isEmpty() && validation.validId(id) == 0) {
 //                listClients = jdbcTemplate.query("SELECT * FROM clients", rowMapper);
 //            }
@@ -186,30 +187,62 @@ public class ClientControler {
 //            }
 
 
+//            int count = 0;
+//            boolean bool;
+//            String idString, firstNameString, lastNameString, where, and;
+//            if (validation.validId(id) > 0) {
+//                idString = " id = ? ";
+//                bool = true;
+//            } else {
+//                idString = "";
+//                bool = false;
+//            }
+//
+//            if (!client.getFirstName().isEmpty()) {
+//                if (bool) firstNameString = " AND first_name = ? ";
+//                else {
+//                    firstNameString = " first_name = ? ";
+//                    bool = true;
+//                }
+//
+//            } else firstNameString = "";
+//
+//            if (!client.getLastName().isEmpty()) {
+//                if (bool) lastNameString = " AND last_name = ? ";
+//                else {
+//                    lastNameString = " last_name = ? ";
+//                }
+//            } else lastNameString = "";
+//
+//            if (!client.getFirstName().isEmpty() || !client.getLastName().isEmpty() || validation.validId(id) > 0)
+//                where = " WHERE ";
+//            else where = "";
+//
+//
+//
+//            String aux = id + " " + firstName + " " + lastName;
+//
+//            listClients = jdbcTemplate.query("(SELECT * FROM clients " + where + idString + firstNameString + lastNameString + ")", rowMapper, aux.split(" "));
+//
+//jdbcTemplate.query("SELECT * FROM clients WHERE id = :id AND first_name = ? ");
 
             for (Map.Entry<String, String> map1 : keyName.entrySet()) {
                 if (map1.getValue().equals("no required")) map1.setValue("");
             }
-            String idString, firstNameString, lastNameString, where;
-            if(validation.validId(id)>0) idString = " id = ? ";
-            else idString = "";
-            if(!client.getFirstName().isEmpty()) firstNameString = " first_name = ? ";
-            else firstNameString = "";
-            if(!client.getLastName().isEmpty()) lastNameString = " last_name = ? ";
-            else lastNameString = "";
-            if (!client.getFirstName().isEmpty() || !client.getLastName().isEmpty() || validation.validId(id) > 0) where = " WHERE ";
-            else where = "";
 
-            List<Object> list = new ArrayList<>();
+            String sql = "SELECT * FROM clients ";
+            if (validation.validId(id) > 0) {
+                sql = sql + " WHERE 1=1 ";
+                System.out.println("1 " + sql);
+                for (Map.Entry<String, String> map1 : keyName.entrySet()) {
+                    if (!map1.getValue().isEmpty()) sql = sql + " AND " + map1.getKey() + " = '" +map1.getValue()+"'";
 
+                }
 
+            }
+            listClients = jdbcTemplate.query(sql, rowMapper);
 
-            list.add(id);
-            list.add(client.getFirstName());
-            list.add(client.getLastName());
-
-            listClients = jdbcTemplate.query("(SELECT * FROM clients "+where+idString+")", rowMapper, id);
-
+            System.out.println(sql);
             resp.setStatus(200);
             logger.info("List");
             return listClients;
