@@ -1,6 +1,5 @@
 package com.unifun.app.components.validation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -56,8 +55,7 @@ public class Validation {
             } else if (st.equals("required")) {
             } else if (st.equals("color")) {
                 vali = false;
-            }
-            else if (st.equals("String")) type = st;
+            } else if (st.equals("String")) type = st;
             else if (st.equals("Integer")) type = st;
             else if (st.matches("\\w+") || st.matches("\\d+")) name = st;
             else reg = st;
@@ -74,19 +72,15 @@ public class Validation {
             if (name.matches(reg)) vali = true;
             else vali = false;
         }
-        if (type.equals("String")) {
+        if (type.equals("String") && vali) {
             vali = name.matches("^\\w\\D+");
-            System.out.println("valid "+vali);
+            System.out.println("valid " + vali);
         }
         if (type.equals("Integer")) {
             if (name.matches("\\d+")) vali = true;
             else vali = false;
         }
         return vali;
-    }
-
-    public Validation(ArrayList<Long> id_object, long id) {
-        validId(id_object, id);
     }
 
     private boolean validColor(LinkedList<String> colorList) {
@@ -105,12 +99,12 @@ public class Validation {
         return test;
     }
 
-    private void validId(ArrayList<Long> id_object, long id) {
-        for (long i : id_object) {
-            if (i == id) {
-                valid = true;
-                break;
-            }
+    public long validId(String id) {
+        try {
+            return Long.parseLong(id);
+
+        } catch (Exception e) {
+            return 0;
         }
     }
 

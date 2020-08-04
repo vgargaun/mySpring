@@ -95,7 +95,7 @@ public class CarsControler {
         JsonComponent j = new JsonComponent();
         try {
 
-            Validation validation = new Validation(this.id, Long.parseLong(id));
+            Validation validation = new Validation();
             if (validation.getValid()) {
                 for (int i = 0; i < this.id.size(); i++) {
                     if (Long.parseLong(id) == this.id.get(i)) {
