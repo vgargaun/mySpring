@@ -31,11 +31,9 @@ public class ClientControler {
     String addNewClients(@RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
                          HttpServletResponse resp) throws JsonProcessingException {
         JsonComponent j = new JsonComponent();
-
         HashMap<String, LinkedList> map = new HashMap<>();
         LinkedList<String> firstN = new LinkedList<>();
         LinkedList<String> lastN = new LinkedList<>();
-
 
         firstN.add(firstName);
         firstN.add("required");
@@ -68,7 +66,8 @@ public class ClientControler {
                 client.setFirstName(keyName.get("firstName"));
                 client.setLastName(keyName.get("lastName"));
 
-                jdbcTemplate.update("INSERT INTO clients (first_name, last_name) VALUES (?,?)", client.getFirstName(), client.getLastName());
+                jdbcTemplate.update("INSERT INTO clients (first_name, last_name) VALUES (?,?)",
+                        client.getFirstName(), client.getLastName());
 
                 resp.setStatus(200);
                 logger.info("Saved new client");
@@ -122,7 +121,8 @@ public class ClientControler {
 
     @GetMapping(path = "/list")
     public @ResponseBody
-    Object listById(@RequestParam(defaultValue = "") String id, @RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
+    Object list(@RequestParam(defaultValue = "") String id, @RequestParam(defaultValue = "")
+            String firstName, @RequestParam(defaultValue = "") String lastName,
                     HttpServletResponse resp) throws JsonProcessingException {
         JsonComponent j = new JsonComponent();
         HashMap<String, LinkedList> map = new HashMap<>();
@@ -131,7 +131,6 @@ public class ClientControler {
 
 
         firstN.add(firstName);
-//        firstN.add("required");
         firstN.add("String");
         firstN.add("min2");
         firstN.add("max7");
@@ -140,7 +139,6 @@ public class ClientControler {
 
 
         lastN.add(lastName);
-//        firstN.add("required");
         lastN.add("String");
         lastN.add("min2");
         lastN.add("max9");
@@ -156,8 +154,8 @@ public class ClientControler {
             }
 
             Clients client = new Clients();
-            client.setFirstName(keyName.get("firstName"));
-            client.setLastName(keyName.get("lastName"));
+            client.setFirstName(keyName.get("first_name"));
+            client.setLastName(keyName.get("last_name"));
             RowMapper<Clients> rowMapper = new RowMapper<Clients>() {
                 @Override
                 public Clients mapRow(ResultSet resultSet, int row) throws SQLException {
@@ -170,87 +168,30 @@ public class ClientControler {
 
             List<Clients> listClients = null;
             keyName.put("id ", id);
-//            if (client.getFirstName().isEmpty() && client.getLastName().isEmpty() && validation.validId(id) == 0) {
-//                listClients = jdbcTemplate.query("SELECT * FROM clients", rowMapper);
-//            }
-//            if (!client.getFirstName().isEmpty() && !client.getLastName().isEmpty()) {
-//                listClients = jdbcTemplate.query("SELECT * FROM clients WHERE first_name= ? AND last_name = ?", rowMapper, client.getFirstName(), client.getLastName());
-//            }
-//            if (validation.validId(id) > 0) {
-//                listClients = jdbcTemplate.query("SELECT * FROM clients WHERE id = ?", rowMapper, validation.validId(id));
-//            }
-//            if (!client.getFirstName().isEmpty()) {
-//                listClients = jdbcTemplate.query("SELECT * FROM clients WHERE first_name = ?", rowMapper, client.getFirstName());
-//            }
-//            if (!(client.getLastName().isEmpty())) {
-//                listClients = jdbcTemplate.query("SELECT * FROM clients WHERE last_name= ?", rowMapper, client.getLastName());
-//            }
-
-
-//            int count = 0;
-//            boolean bool;
-//            String idString, firstNameString, lastNameString, where, and;
-//            if (validation.validId(id) > 0) {
-//                idString = " id = ? ";
-//                bool = true;
-//            } else {
-//                idString = "";
-//                bool = false;
-//            }
-//
-//            if (!client.getFirstName().isEmpty()) {
-//                if (bool) firstNameString = " AND first_name = ? ";
-//                else {
-//                    firstNameString = " first_name = ? ";
-//                    bool = true;
-//                }
-//
-//            } else firstNameString = "";
-//
-//            if (!client.getLastName().isEmpty()) {
-//                if (bool) lastNameString = " AND last_name = ? ";
-//                else {
-//                    lastNameString = " last_name = ? ";
-//                }
-//            } else lastNameString = "";
-//
-//            if (!client.getFirstName().isEmpty() || !client.getLastName().isEmpty() || validation.validId(id) > 0)
-//                where = " WHERE ";
-//            else where = "";
-//
-//
-//
-//            String aux = id + " " + firstName + " " + lastName;
-//
-//            listClients = jdbcTemplate.query("(SELECT * FROM clients " + where + idString + firstNameString + lastNameString + ")", rowMapper, aux.split(" "));
-//
-//jdbcTemplate.query("SELECT * FROM clients WHERE id = :id AND first_name = ? ");
 
             for (Map.Entry<String, String> map1 : keyName.entrySet()) {
-                if (map1.getValue().equals("no required")) map1.setValue("");
+                if (map1.getValue().equals("no required") || map1.getValue() == null) map1.setValue("");
             }
 
             String sql = "SELECT * FROM clients ";
-            if (validation.validId(id) > 0) {
+            if (!client.getFirstName().isEmpty() || !client.getLastName().isEmpty() || validation.validId(id) > 0) {
                 sql = sql + " WHERE 1=1 ";
-                System.out.println("1 " + sql);
                 for (Map.Entry<String, String> map1 : keyName.entrySet()) {
-                    if (!map1.getValue().isEmpty()) sql = sql + " AND " + map1.getKey() + " = '" +map1.getValue()+"'";
+                    if (!map1.getValue().isEmpty())
+                        sql = sql + " AND " + map1.getKey() + " = '" + map1.getValue() + "'";
 
                 }
-
             }
             listClients = jdbcTemplate.query(sql, rowMapper);
 
-            System.out.println(sql);
             resp.setStatus(200);
-            logger.info("List");
+            logger.info("Displaying the list");
             return listClients;
 
         } catch (Exception e) {
             resp.setStatus(400);
-            logger.warn("Error for show all " + e);
-            return j.ErrorMessage(4, "ERROR", HttpStatus.BAD_REQUEST);
+            logger.warn("Error displaying the list " + e);
+            return j.ErrorMessage(4, "Error displaying the list", HttpStatus.BAD_REQUEST);
         }
 
     }

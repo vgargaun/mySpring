@@ -1,16 +1,17 @@
 package com.unifun.app.components.validation;
 
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+@NoArgsConstructor
 public class Validation {
 
     String[] color = {"BLACK", "RED", "GREEN", "YELLOW", "BLUE", "MAROON"};
     private boolean valid = false;
 
-    public Validation() {
-    }
 
     public HashMap<String, String> validation(HashMap<String, LinkedList> map) {
         HashMap<String, String> con = new HashMap<String, String>();
@@ -74,7 +75,6 @@ public class Validation {
         }
         if (type.equals("String") && vali) {
             vali = name.matches("^\\w\\D+");
-            System.out.println("valid " + vali);
         }
         if (type.equals("Integer")) {
             if (name.matches("\\d+")) vali = true;
@@ -107,9 +107,4 @@ public class Validation {
             return 0;
         }
     }
-
-    public boolean getValid() {
-        return valid;
-    }
-
 }

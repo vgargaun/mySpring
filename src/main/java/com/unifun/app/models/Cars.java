@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
-
 @Setter
 @Getter
 @AllArgsConstructor
@@ -20,9 +19,14 @@ public class Cars {
     private String model;
     private String color;
 
-//    private int price;
-
     @ManyToOne(cascade = CascadeType.ALL)
     public Clients id_client;
 
+    public Cars(long id, String model, String color) {
+        this.id = id;
+        this.model = model;
+        this.color = color;
+    }
 }
+
+
